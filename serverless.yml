@@ -1,0 +1,19 @@
+service: fueller-serverless
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: eu-west-1
+
+functions:
+  find-customer:
+    handler: functions/find-customer.handler
+    events:
+      - http:
+          path: /customer/{id}
+          method: get
+          request: 
+            parameters: 
+             paths: 
+               id: true
