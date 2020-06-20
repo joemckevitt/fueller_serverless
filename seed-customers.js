@@ -8,32 +8,32 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 let customers = [
   { 
     CustomerId: "001", 
-    Amouunt: 50, 
+    Amount: 50, 
     Name: "Joe" 
   },
   { 
     CustomerId: "002", 
-    Amouunt: 200, 
+    Amount: 200, 
     Name: "Joanne" 
   },
   { 
     CustomerId: "003", 
-    Amouunt: 10, 
+    Amount: 10, 
     Name: "Gordon" 
   },
   { 
     CustomerId: "004", 
-    Amouunt: 435, 
+    Amount: 435, 
     Name: "Mary" 
   },
   { 
     CustomerId: "005", 
-    Amouunt: 0, 
+    Amount: 0, 
     Name: "Bill" 
   },
   { 
     CustomerId: "006", 
-    Amouunt: 1000, 
+    Amount: 1000, 
     Name: "Lucy" 
   },
 ];
