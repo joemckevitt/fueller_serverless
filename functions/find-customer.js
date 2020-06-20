@@ -19,11 +19,7 @@ exports.handler =  function(event, context, callback) {
     }
   
     var id = event.pathParameters.id;
-    
-    if (typeof id !== "undefined" && (typeof id !== "object" || !id))
-    
     console.log("id is " + id);
-    console.log(event);
     
     if (typeof id !== "undefined" && (typeof id !== "object" || !id))
     {
@@ -105,7 +101,7 @@ function wrapResponse(statusCode, body) {
             'Access-Control-Allow-Credentials': true,
           },
           
-          
+
         "body": JSON.stringify(body),
     };
 }
