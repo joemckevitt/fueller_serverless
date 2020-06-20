@@ -11,11 +11,28 @@ var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 const tableName = process.env.DYNAMODB_TABLE;
 
 exports.handler =  function(event, context, callback) {
-  
-    const id = event.id;
     
-    findCustomer(id, callback);
-
+    console.log('Received event:', JSON.stringify(event, null, 2));
+    
+    if (event.pathParameters === undefined || event.pathParameters.id === undefined) {
+        callback(null, wrapResponse(400, "400 Invalid Input"));
+    }
+  
+    var id = event.pathParameters.id;
+    
+    if (typeof id !== "undefined" && (typeof id !== "object" || !id))
+    
+    console.log("id is " + id);
+    console.log(event);
+    
+    if (typeof id !== "undefined" && (typeof id !== "object" || !id))
+    {
+          findCustomer(id, callback);  
+    } else  {
+          //should not be returning status code of 404
+          callback(null, noCustomerFound());
+    }
+    
 };
 
 function findCustomer(id, callback) {
@@ -59,20 +76,30 @@ function populateCustomer(id, customerEntry) {
     };
     
     console.log({customer: customer});
-
-    return {
+    
+    var responseBody = {
         success: true, 
         customer: customer,
         customerFound: true
     };  
 
+    return wrapResponse(200, responseBody);
 }
 
 function noCustomerFound(data) {
     console.log("customer not found"); 
 
-    return {
+    var responseBody = {
         error: true, 
         customerFound: false
-    };    
+    };  
+    
+    return wrapResponse(200, responseBody);
+}
+
+function wrapResponse(statusCode, body) {
+    return {
+        "statusCode": statusCode,
+        "body": JSON.stringify(body),
+    };
 }
