@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <!-- Special version of Bootstrap that only affects content wrapped in .bootstrap-iso -->
+    <link rel="stylesheet" href="https://formden.com/static/cdn/bootstrap-iso.css" /> 
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- Inline CSS based on choices in "Settings" tab -->
+    <style>.bootstrap-iso .formden_header h2, .bootstrap-iso .formden_header p, 
+      .bootstrap-iso form{font-family: Arial, Helvetica, sans-serif; color: black}
+      .bootstrap-iso form button, .bootstrap-iso form button:hover{color: white !important;} 
+      .asteriskField{color: red;}
+     </style>
+  </head>
+  <body>
+  
+  <p><img src="https://drive.google.com/uc?export=download&id=1ogUtDpuTv2Z3cUoJlN3D_JaWMA02Tmz1" width="225" height="75"> </p>
+  
+  
+  <!-- Reference to the vue instance -->
+  <div id="fueller-app">
+  
+  
+    <!-- HTML Form (wrapped in a .bootstrap-iso div) -->
+    <div class="bootstrap-iso">
+     <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+        <!--<div class="col-md-6 col-sm-6 col-xs-12">-->
+        <!--<form method="post">-->
+        
+         <div class="form-group" v-if="!customerFound">
+          <label class="control-label requiredField" for="fuel_card_id">
+           Fuel Card Number
+           <span class="asteriskField">
+            *
+           </span>
+          </label>
+          <input type="number" id="fuelcard-number" name="number" v-model='customer.number' placeholder="00X" >
+          <span class="help-block" id="hint_fuel_card_id">
+           Please enter the fuel card number
+          </span>
+         </div>
+         
+          <!-- TODO move into the above form-group -->
+          <div class="form-group" v-if="!customerFound">
+            <div>
+              <div class="btn btn-primary" id="find-customer-button" onclick="findCustomer()">Next</div>
+            </div>
+          </div>
+          
+          <!-- Second stage, enter fuel transaction details -->
+          <div class="form-group ">
+            <div v-if="customerFound && !showCompleteTransactionButton" class="alert alert-success" role="alert">
+              Card Number {{customer.number}} 
+            </div>
+            <div v-else-if="searchPerformed && !showCompleteTransactionButton" class="alert alert-danger" role="alert">
+              No Customer found for this fuel card number 
+            </div>
+          </div>
+          
+          <div class="form-group" v-if="customerFound && !showCompleteTransactionButton">
+            <label class="control-label requiredField" for="fuel_type">
+               Fuel
+             <span class="asteriskField">
+              *
+             </span>
+            </label>
+            <select class="select form-control" id="fuel_type" name="fuel_type" v-model='customer.fuelType'>
+             <option disabled selected value> -- select an option -- </option>
+             <option value="Diesel">
+              Diesel
+             </option>
+             <option value="Petrol">
+              Petrol
+             </option>
+            </select>
+            <span class="help-block" id="hint_fuel_type">
+             Please select fuel type
+            </span>
+         </div>
+
+          <div class="form-group" v-if="customerFound && !showCompleteTransactionButton">
+              <label class="control-label requiredField" for="fuel_amount">
+               Amount
+               <span class="asteriskField">
+                *
+               </span>
+              </label>
+              <div class="input-group">
+               <div class="input-group-addon">
+                &pound;
+               </div>
+               <input class="form-control" v-model='customer.amount' placeholder="XX.XX" type="number"/>
+              </div>
+              <span class="help-block" id="hint_fuel_amount">
+               Please enter the total amount of fuel spend
+              </span>
+          </div>
+          
+          <div class="form-group" v-if="customerFound && !showCompleteTransactionButton">
+            <div>
+              <div class="btn btn-primary" v-on:click="secondStep">Check credit</div>
+            </div>
+          </div>
+          
+          <!-- need to change the if statements to mirror the actions and results -->
+          <div class="form-group" v-if="customerFound">
+            <div v-if="showCompleteTransactionButton && !showCompleteTransactionMsg" class="alert alert-success" role="alert">
+              £{{customer.amount}} for card number {{customer.number}}, 
+              Please review and confirm transaction.
+            </div>
+            <div v-else-if="!isAuthorised && creditCheckPerformed" class="alert alert-danger" role="alert">
+              NOT Authorised - Request customer to top-up
+            </div>
+          </div>
+          
+           <div class="form-group">
+            <div>
+              <div v-if="showCompleteTransactionButton && !showCompleteTransactionMsg" class="btn btn-primary" v-on:click="finalStep">Confirm Transaction</div>
+            </div>
+            <div v-if="showCompleteTransactionMsg" class="alert alert-success" role="alert">
+              Tranaction Complete {{transCode}}
+            </div>
+           </div> 
+           
+           <div class="form-group">
+            <div>
+              <div v-if="showCompleteTransactionMsg" class="btn btn-primary" v-on:click="refreshApp">Refresh</div>
+            </div>
+           </div> 
+           
+
+          
+        <!--</form>-->
+       </div>
+      </div>
+     </div>
+    </div>
+
+  </div><!-- Reference to the vue instance -->
+
+  <script type="text/javascript">
+  
+  var app = new Vue({
+    el: '#fueller-app', 
+    data: { 
+      customer: {
+         number: '', 
+         name: '',
+         fuelType: '',
+         amount: '',
+      },      
+      customers: [],
+      isAuthorised: false,
+      customerFound: false,
+      searchPerformed: false,
+      creditCheckPerformed: false,
+      showCompleteTransactionButton: false,
+      showCompleteTransactionMsg: false,
+      shortfall: 0,
+      transCode: ''
+    },
+    // define methods under the `methods` object
+    methods: {
+      secondStep: function (event) {
+        isCustomerAuth();        
+      },
+      finalStep: function (event) {
+        submitTransaction();        
+      },
+      refreshApp: function (event) {
+        window.open("https://script.google.com/macros/s/AKfycbwFAXK6C25c5r77o-9BPjWqBYZg7N_wvTuInjAkkb6f/dev",'_top');
+      }
+    }
+  }); 
+    
+ function findCustomer()  {
+    console.log("find customer clicked");
+
+    axios.get('https://g0p8bf6n22.execute-api.eu-west-1.amazonaws.com/dev/customer/' + (app.customer.number))
+      .then(function (response) {
+        console.log(JSON.stringify(response.data, null, '\t'));
+        onCustomerSearchResult(response.data);
+      })
+      .catch(function (error) {
+        console.log("error occurred");
+      }); 
+ }
+
+  function isCustomerAuth()  {
+    console.log("isCustomerAuth clicked");
+
+    var data = {
+          id: app.customer.number, 
+          amount: app.customer.amount, 
+          fuelType: app.customer.fuelType
+    };
+
+    console.log(data);
+
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+
+    axios.post('https://w0o8sik622.execute-api.eu-west-1.amazonaws.com/Development/auth', data, {
+        headers: headers
+      })
+      .then(function (response) {
+        console.log(JSON.stringify(response.data, null, '\t'));
+        creditCheckResults(response.data);
+        //onCustomerSearchResult(response.data);
+      })
+      .catch(function (error) {
+        console.log("error occurred");
+      }); 
+  }
+    
+  function onCustomerSearchResult(response){
+
+   if(response.success) {
+      app.customer = response.customer; 
+      app.customerFound = response.customerFound;
+    } else {
+      app.customerFound = false;
+    }
+    
+    app.searchPerformed = true; 
+  }
+
+  function creditCheckResults(response){
+ 
+   if(response.success) {
+      app.isAuthorised = response.isAuthorised;
+      //display complete transaction button only if its authorised
+      if (response.isAuthorised) {
+        app.showCompleteTransactionButton = true;        
+      }
+
+    } else {
+      app.isAuthorised = response.isAuthorised;
+      app.customerFound = response.customerFound;
+    }
+    
+
+    
+    app.creditCheckPerformed = true; 
+  }
+
+  function submitTransaction()  {
+
+    console.log("submitTransaction clicked");
+
+    var data = {
+          number: app.customer.number, 
+          amount: app.customer.amount, 
+          fuelType: app.customer.fuelType
+    };
+
+    console.log(data);
+
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+
+    axios.post('https://w0o8sik622.execute-api.eu-west-1.amazonaws.com/Development/transaction', data, {
+        headers: headers
+      })
+      .then(function (response) {
+        console.log(JSON.stringify(response.data, null, '\t'));
+        transactionResults(response.data);
+      })
+      .catch(function (error) {
+        console.log("error occurred");
+      }); 
+
+  }
+  
+  function transactionResults(response){
+ 
+    app.transCode = response.transactionNumber;        
+    app.showCompleteTransactionMsg = true;
+    
+  }
+  
+  </script>
+  </body>
+</html>
