@@ -31,6 +31,14 @@ functions:
              paths: 
                id: true
 
+  auth-customer:
+    handler: functions/authorise-customer.handler
+    events:
+      - http:
+          path: auth
+          method: post
+          cors: true
+
 # you can add CloudFormation resource templates here
 #resources:
 resources:
