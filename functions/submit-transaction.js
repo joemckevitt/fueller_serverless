@@ -11,6 +11,8 @@ var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 const tableName = process.env.TRANSACTION_TABLE;
 
+const toAddress = process.env.TO_ADDRESS;
+
 exports.handler =  function(event, context, callback) {
 
     console.log('Received event:', JSON.stringify(event, null, 2));
@@ -141,7 +143,7 @@ function sendEmail(transactionNo, timestamp, customerNo, fuelType, pumpPrice, ca
     
      var params = {
         Destination: {
-            ToAddresses: ["joemckevittrun@gmail.com"]
+            ToAddresses: [toAddress]
         },
         Message: {
             Body: {

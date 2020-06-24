@@ -8,6 +8,7 @@ provider:
   environment:
     DYNAMODB_TABLE: ${self:service}-customer-${opt:stage, self:provider.stage}
     TRANSACTION_TABLE: ${self:service}-transaction-${opt:stage, self:provider.stage}
+    TO_ADDRESS: de5be1fe8b-48cfe7@inbox.mailtrap.io
   iamRoleStatements:
     - Effect: Allow
       Action:
