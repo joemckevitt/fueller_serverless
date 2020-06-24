@@ -98,8 +98,7 @@ function appendRowOnTransactionSheet(cust_num, fuelType, amountOfFuelPuchased, t
 
 function transactionReceipt(transactionCode, cust_num, fuelType, amountOfFuelPuchased, callback)  {
   
-   //TODO configure email
-    //sendEmail(transactionCode, generateTimestamp(), cust_num, fuelType, amountOfFuelPuchased, callback);
+    sendEmail(transactionCode, generateTimestamp(), cust_num, fuelType, amountOfFuelPuchased, callback);
 
   return {
     transactionNumber: transactionCode
