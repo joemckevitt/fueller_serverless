@@ -1,5 +1,12 @@
 service: fueller-serverless
 
+plugins:
+  - serverless-finch
+
+custom:
+  client:
+    bucketName: fueller-serverless-website
+
 provider:
   name: aws
   runtime: nodejs12.x
