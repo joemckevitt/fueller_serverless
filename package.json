@@ -1,0 +1,28 @@
+{
+  "name": "fueller_serverless",
+  "version": "1.0.0",
+  "description": "",
+  "main": "seed-customers.js",
+  "dependencies": {
+    "aws-sdk": "^2.696.0",
+    "co": "^4.6.0",
+    "serverless-dependency-install": "0.0.3",
+    "serverless-finch": "^2.6.0"
+  },
+  "devDependencies": {
+    "serverless": "^1.74.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joemckevitt/fueller_serverless.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joemckevitt/fueller_serverless/issues"
+  },
+  "homepage": "https://github.com/joemckevitt/fueller_serverless#readme"
+}
