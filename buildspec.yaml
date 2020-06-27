@@ -5,3 +5,6 @@ phases:
     commands:
       - chmod +x build.sh
       - ./build.sh deploy dev
+
+# more details on the build template can be found at 
+# https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax
