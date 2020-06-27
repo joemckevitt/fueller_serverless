@@ -4,7 +4,7 @@ A project to learn Serverless best practices.
 
 ## Description
 
-An in-depth paragraph about your project and overview of use.
+An side project to learn the key building blocks for building serverless applications.
 
 ## Getting Started
 
