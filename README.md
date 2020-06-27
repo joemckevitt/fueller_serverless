@@ -10,8 +10,9 @@ An side project to learn the key building blocks for building serverless applica
 
 ### Dependencies
 
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Windows 10
+* NPM
+* Serverless framework
+* AWS account setup
 
 ### Installing
 
