@@ -4,7 +4,7 @@
   "description": "",
   "main": "seed-customers.js",
   "dependencies": {
-    "aws-sdk": "^2.696.0",
+    "aws-sdk": "^2.814.0",
     "co": "^4.6.0",
     "serverless-dependency-install": "0.0.3",
     "serverless-finch": "^2.6.0"
