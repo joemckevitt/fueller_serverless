@@ -10,7 +10,7 @@
     "serverless-finch": "^2.6.0"
   },
   "devDependencies": {
-    "serverless": "^1.74.0"
+    "serverless": "^3.25.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
